@@ -19,13 +19,11 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/read-sprint',  {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('sprintsOverview', { 
     title: "Sprints Overview:", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -35,23 +33,16 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
 });
 
 
-
 router.get('/tasks-overview', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/read-task', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/read-task', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { }
-
-
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('tasksOverview', { 
     title: "Tasks Overview:", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -61,23 +52,16 @@ router.get('/tasks-overview', requiresAuth(), async (req, res) => {
 });
 
 
-
 router.get('/create-task', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/create-task', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/create-task', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { 
-    console.log('Not Authorized to view page...');
-  }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('createTask', { 
     title: "Create Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -87,23 +71,16 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
 });
 
 
-
 router.get('/read-task', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/read-task', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/read-task',  {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { 
-    console.log('Not Authorized to view page...');
-  }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('readTask', { 
     title: "Read Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -115,18 +92,14 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
 
 router.get('/update-task', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/update-task', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/update-task', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('updateTask', { 
     title: "Update Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -138,18 +111,14 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
 
 router.get('/delete-task', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/delete-task', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/delete-task', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
   } catch (e) { }
-
+  //render the content after a successful api response
   res.render('deleteTask', { 
     title: "Delete Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -162,20 +131,14 @@ router.get('/delete-task', requiresAuth(), async (req, res) => {
 //create sprint data
 router.get('/create-sprint', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/create-sprint', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/create-sprint', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { 
-    console.log('Not Authorized to view page...');
-  }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('createSprint', { 
     title: "Create Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -185,23 +148,16 @@ router.get('/create-sprint', requiresAuth(), async (req, res) => {
 });
 
 
-
 router.get('/read-sprint', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/read-sprint', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/read-sprint', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { 
-    console.log('Not Authorized to view page...');
-  }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('readSprint', { 
     title: "Read Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -213,18 +169,14 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
 
 router.get('/update-sprint', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/update-sprint', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/update-sprint', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('updateSprint', { 
     title: "Update Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -234,20 +186,17 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
 });
 
 
+
 router.get('/delete-sprint', requiresAuth(), async (req, res) => {
   let data = {};
-
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/delete-sprint', 
-    {
-      headers: {
-        authorization: `${token_type} ${access_token}`
-      }
+    const apiResponse = await axios.get('http://localhost:5000/delete-sprint', {
+      headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { }
-
+  } catch (e) { console.log('Not Authorized to view page...'); }
+  //render the content after a successful api response
   res.render('deleteSprint', { 
     title: "Delete Data Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
