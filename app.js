@@ -15,7 +15,8 @@ const config = {
   authorizationParams: {
     response_type: 'code', //authorization flow type (code-grant type)
     audience: "https://project-data-api.com", //api that we want to talk to
-    scope: 'openid profile email create:task read:task update:task delete:task create:sprint read:sprint update:sprint delete:sprint' //define the scope of the data that is being authorized
+    //define the scope of the data that is being authorized
+    scope: 'openid profile email create:task read:task update:task delete:task create:sprint read:sprint update:sprint delete:sprint create:project read:project update:project delete:project' 
   }
 };
 
