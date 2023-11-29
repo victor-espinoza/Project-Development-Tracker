@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const { requiresAuth } = require('express-openid-connect');
 const axios = require('axios');
 
@@ -244,6 +244,33 @@ router.get('/create-project', requiresAuth(), async (req, res) => {
     data
   });
 });
+
+
+router.post("/create-project", (req, res) => {
+  console.log("Posting Data Yo...");
+  const name = req.body.newName;
+  const status = req.body.newStatus;
+  const startDate = req.body.newStartDate;
+  const dueDate = req.body.newDueDate;
+  console.log("Username: " + name);
+  console.log("Status: " + status);
+  console.log("Start Date: " + startDate);
+  console.log("Due Date: " + dueDate);
+  res.end();
+});
+
+
+// router.post("/create-project", requiresAuth(), async function(req, res){
+//   console.log("Posting Data Yo...")
+//   try {
+//     const apiResponse = await axios.get('http://localhost:5000/create-project', {
+//       headers: { authorization: `${token_type} ${access_token}` }
+//     });
+//     data = apiResponse.data;
+//   } catch (e) { console.log('Not Authorized to view page...'); }
+//   //render the content after a successful api response
+//   res.redirect("/projects-overview")
+// });
 
 
 router.get('/read-project', requiresAuth(), async (req, res) => {
