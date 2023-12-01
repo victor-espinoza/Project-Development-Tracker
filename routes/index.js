@@ -78,6 +78,8 @@ router.get('/projects-overview', requiresAuth(), async (req, res) => {
 });
 
 
+
+
 router.get('/create-task', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
@@ -154,9 +156,40 @@ router.get('/delete-task', requiresAuth(), async (req, res) => {
 });
 
 
+
+//post project data
+router.post("/create-sprint", requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  //convert input dates into the required date format
+  const startDate = moment(data.newStartDate).format("YYYY-MM-DD");
+  const dueDate = moment(data.newDueDate).format("YYYY-MM-DD");
+  //give the input dates default values if the converted dates are invalid
+  data.newStartDate = (moment(startDate).isValid()) ? moment(startDate).toDate() : new Date();
+  data.newDueDate = (moment(dueDate).isValid()) ? moment(dueDate).toDate() : moment(new Date()).add(7, 'D').toDate();
+  //update status and name variables if needed
+  data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
+  data.newName = (data.newName) ? data.newName : 'New Project';
+  console.log(data.newName);
+  console.log(data.newStatus);
+  console.log(data.newStartDate);
+  console.log(data.newDueDate);
+  try {
+    const apiResponse = await axios.post('http://localhost:5000/create-sprint', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    res.redirect("/sprints-overview");
+  } catch (e) { console.log(e); } 
+});
+
+
 //create sprint data
 router.get('/create-sprint', requiresAuth(), async (req, res) => {
   let data = {};
+  //create default dates for the start/due date fields
+  const curr_date = moment(new Date()).format('YYYY-MM-DD');
+  const due_date = moment(curr_date).add(1, 'W').format('YYYY-MM-DD');
+  const default_dates = { start_date: curr_date, due_date: due_date }
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/create-sprint', {
@@ -169,7 +202,8 @@ router.get('/create-sprint', requiresAuth(), async (req, res) => {
     title: "Create Sprint Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
     user: req.oidc.user,
-    data
+    data,
+    default_dates
   });
 });
 
@@ -216,7 +250,7 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
 router.get('/delete-sprint', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
-  console.log(`${token_type}: ${access_token}`); 
+  //console.log(`${token_type}: ${access_token}`); 
   try {
     const apiResponse = await axios.get('http://localhost:5000/delete-sprint', {
       headers: { authorization: `${token_type} ${access_token}` }
@@ -233,16 +267,30 @@ router.get('/delete-sprint', requiresAuth(), async (req, res) => {
 });
 
  
+router.post("/update-project-focus", requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.put('http://localhost:5000/update-project-focus', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    res.redirect("/projects-overview");
+  } catch (e) { console.log(e); }
+  
+});
+
 
 //create Project data
 router.get('/create-project', requiresAuth(), async (req, res) => {
   let data = {};
+  const curr_date = moment(new Date()).format('YYYY-MM-DD');
+  const due_date = moment(curr_date).add(1, 'W').format('YYYY-MM-DD');
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/create-project', {
+    await axios.get('http://localhost:5000/create-project', {
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    data = apiResponse.data;
+    data = {current_date: curr_date, due_date: due_date};
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('createProject', { 
@@ -253,12 +301,11 @@ router.get('/create-project', requiresAuth(), async (req, res) => {
   });
 });
 
-
+//post project data
 router.post("/create-project", requiresAuth(), async (req, res) => {
-  console.log("Posting Data Yo...");
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
-  //convert input dates into the required date format
+  //create default dates for the start/due date fields
   const startDate = moment(data.newStartDate).format("YYYY-MM-DD");
   const dueDate = moment(data.newDueDate).format("YYYY-MM-DD");
   //give the input dates default values if the converted dates are invalid
@@ -267,24 +314,21 @@ router.post("/create-project", requiresAuth(), async (req, res) => {
   //update status and name variables if needed
   data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
   data.newName = (data.newName) ? data.newName : 'New Project';
-  console.log(data.newName);
-  console.log(data.newStatus);
-  console.log(data.newStartDate);
-  console.log(data.newDueDate);
   try {
     const apiResponse = await axios.post('http://localhost:5000/create-project', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     res.redirect("/projects-overview");
-  } catch (e) { console.log(''); }
-  
+  } catch (e) { console.log(''); } 
 });
+
 
 router.get('/read-project', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/read-project', {
+      params: { requested_project_id: req.query.project_id, },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;

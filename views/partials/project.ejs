@@ -1,0 +1,30 @@
+<table>
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Status</th>
+      <th>Focus</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+    </tr>
+  </thead>
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.forEach(item => {%>
+      <tr>
+        <td><%=item.name %></td>
+        <td><%=item.status_flag%></td>
+        <td> 
+          <% if (item.focus_flag > 0) {%>
+            &#10004;
+          <%} else { %>
+            &#10008;
+          <%} %>
+          
+        </td>
+        <td><%=item.start_date%></td>
+        <td><%=item.due_date%></td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>

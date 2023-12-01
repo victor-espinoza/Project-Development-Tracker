@@ -30,7 +30,6 @@ app.use(express.json()); //handle incoming json
 app.use(express.urlencoded({ extended: true })); //handle incoming url encoded query strings
 //anything in the public directory will be served before routes are resolved
 app.use(express.static('public'));
-// app.use('/css', express.static(__dirname + 'public/css'));
 
 
 //authentication middleware (auth router attaches /login, /logout, and /callback routes to the baseURL)

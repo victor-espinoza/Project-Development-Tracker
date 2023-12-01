@@ -1,0 +1,62 @@
+<table>
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Status</th>
+      <th>Focus</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+    </tr>
+  </thead>
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.forEach(item => {%>
+      <tr>
+        <td>
+          <form action="/read-project" method="GET">
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="submit" value="<%=item.name %>" name="submitData"/>
+            </div>
+          </form>
+        </td>
+        <td><%=item.status_flag%></td>
+        <td>
+          <form action="/update-project-focus" method="POST" id="focus-form<%=item.project_id %>">
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <% if (item.focus_flag > 0) {%>
+                <input type="checkbox" name="focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>" checked>
+              <%} else { %>
+                <input type="checkbox" name="focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>">
+              <%} %>
+            </div>
+          </form>
+        </td>
+        <td><%=item.start_date%></td>
+        <td><%=item.due_date%></td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+<script>
+  function onlyOne(checkbox) {
+    let focusCount = 0;
+    let checkboxes = document.getElementsByName('focus-check');
+    checkboxes.forEach((item) => {
+        if (item.checked) 
+          focusCount++;
+    });
+    if (focusCount > 0) {
+      checkboxes.forEach((item) => {
+          // console.log(item.checked);
+          if (item !== checkbox) item.checked = false;
+      });
+      document.getElementById(`focus-form${checkbox.value}`).submit();
+      // checkbox.parentElement.submit();
+    } else {
+      checkbox.checked = true;
+    }
+  }
+</script>

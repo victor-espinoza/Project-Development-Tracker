@@ -11,18 +11,18 @@
       <input type="text" name="newStatus" placeholder="(Default: In Progress)"/>
     </div>
     <div class="input-field">
-      <label for="newStartDate">Start Date: (MM/DD/YYYY)</label>
-      <input type="text" name="newStartDate" placeholder="(Default: Today's Date)" class="date-input"/>
+      <label for="newStartDate">Start Date:</label>
+      <input type="date" name="newStartDate" value="<%= data.current_date %>"  class="date-input"/>
     </div>
     <div class="input-field">
-      <label for="newDueDate">Due Date: (MM/DD/YYYY)</label>
-      <input type="text" name="newDueDate" placeholder="(Default: Today's Date + 1 Month)" class="date-input" />
+      <label for="newDueDate">Due Date:</label>
+      <input type="date" name="newDueDate" value="<%= data.due_date %>" class="date-input" />
     </div>
     <div class="input-field">
       <br/>
       <input type="submit" value="Create Project" name="submitData"/>
     </div>
-  </form>
+  </form> 
 <% } %>
 
 <%- include('partials/footer') -%>

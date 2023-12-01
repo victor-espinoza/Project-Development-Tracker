@@ -1,32 +1,7 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<table>
-  <thead>
-    <tr>
-      <th>Project Name</th>
-      <th>Status</th>
-      <th>Focus</th>
-      <th>Start Date</th>
-      <th>Due Date</th>
-    </tr>
-  </thead>
-  <tbody id="data-output">
-    <!-- Populate table  -->
-    <% data.forEach(item => {%>
-      <tr>
-        <td><%=item.name %></td>
-        <td><%=item.status_flag%></td>
-        <% if (item.focus_flag > 0) {%>
-          <td>&#10003;</td>
-        <%} else { %>
-          <td>&#10008;</td>
-        <%} %>
-        <td><%=item.start_date%></td>
-        <td><%=item.due_date%></td>
-      </tr>
-    <% }); %>
-  </tbody>
-</table>
+<%- include('partials/projects') -%>
+
 
 <%- include('partials/footer') -%>
