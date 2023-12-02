@@ -1,16 +1,59 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<pre><%= JSON.stringify(user, null, 2) %></pre>
 <% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" />
-    <p class="name">
-      <%=user.name%>
-    </p>
-  </div>
+  <form action="/create-task" method="POST">
+    <div class="input-field">
+      <label for="projectId">Project:</label>
+      <select name="projectId" id="project-drop-down">   
+        <% data.projects.forEach(item => {%>
+          <% if (item.focus_flag == 1) { %>
+            <option value="<%=item.project_id %>" selected><%=item.name %></option>
+          <% } else { %>
+            <option value="<%=item.project_id %>"><%=item.name %></option>
+          <% } %>
+        <% }); %>
+      </select>
+    </div>
+    <!-- <div class="input-field">
+      <label for="sprintId">Sprint:</label>
+      <select name="sprintId" id="sprint-drop-down">   
+        <% data.sprints.forEach(item => {%>
+          <% if (item.focus_flag == 1) { %>
+            <option value="<%=item.project_id %>" selected><%=item.name %></option>
+          <% } else { %>
+            <option value="<%=item.project_id %>"><%=item.name %></option>
+          <% } %>
+        <% }); %>
+      </select>
+    </div> -->
+    <div class="input-field">
+      <label for="newName">Task Name:</label>
+      <input type="text" name="newName" placeholder="(Default: New Task)"/>
+    </div>
+    <div class="input-field">
+      <label for="newStatus">Status:</label>
+      <input type="text" name="newStatus" placeholder="(Default: In Progress)"/>
+    </div>
+    <div class="input-field">
+      <label for="owner">Owner:</label>
+      <input type="text" name="owner" placeholder=""/>
+    </div>
+    <div class="input-field">
+      <label for="newStartDate">Start Date:</label>
+      <input type="date" name="newStartDate" value="<%= default_dates.start_date %>" class="date-input"/>
+    </div>
+    <div class="input-field">
+      <label for="newDueDate">Due Date:</label>
+      <input type="date" name="newDueDate" value="<%= default_dates.due_date %>" class="date-input" />
+    </div>
+    <div class="input-field">
+      <br/>
+      <input type="submit" value="Create Task" name="submitData"/>
+    </div>
+  </form>
 <% } %>
+<br /><br /><br />
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>

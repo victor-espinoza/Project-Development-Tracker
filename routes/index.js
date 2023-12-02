@@ -19,11 +19,17 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/sprints-overview',  {
+    const apiResponse = await axios.get('http://localhost:5000/sprints-overview', {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    data.forEach(item => {
+      // moment(data.newStartDate).format("YYYY-MM-DD");
+      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
+      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
+    });
+  } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('sprintsOverview', { 
     title: "Sprints Overview:", 
@@ -42,7 +48,13 @@ router.get('/tasks-overview', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    data.forEach(item => {
+      // moment(data.newStartDate).format("YYYY-MM-DD");
+      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
+      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
+    });
+  } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('tasksOverview', { 
     title: "Tasks Overview:", 
@@ -79,9 +91,43 @@ router.get('/projects-overview', requiresAuth(), async (req, res) => {
 
 
 
+//post project data
+router.post("/create-task", requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  //convert input dates into the required date format
+  const startDate = moment(data.newStartDate).format("YYYY-MM-DD");
+  const dueDate = moment(data.newDueDate).format("YYYY-MM-DD");
+  //give the input dates default values if the converted dates are invalid
+  data.newStartDate = (moment(startDate).isValid()) ? moment(startDate).toDate() : new Date();
+  data.newDueDate = (moment(dueDate).isValid()) ? moment(dueDate).toDate() : moment(new Date()).add(7, 'D').toDate();
+  //update status and name variables if needed
+  data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
+  data.newName = (data.newName) ? data.newName : 'New Task';
+  try {
+    const apiResponse = await axios.post('http://localhost:5000/create-task', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    console.log(responseData);
+    res.redirect("/tasks-overview");
+    // res.redirect(url.format({
+    //   pathname: "/tasks-overview",
+    //   query: {
+    //     sprintId : ,
+    //   }
+    // }));
+  } catch (e) { console.log(e); } 
+});
 
+
+//create sprint data
 router.get('/create-task', requiresAuth(), async (req, res) => {
   let data = {};
+  //create default dates for the start/due date fields
+  const curr_date = moment(new Date()).format('YYYY-MM-DD');
+  const due_date = moment(curr_date).add(1, 'W').format('YYYY-MM-DD');
+  const default_dates = { start_date: curr_date, due_date: due_date }
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/create-task', {
@@ -94,7 +140,8 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
     title: "Create Task Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
     user: req.oidc.user,
-    data
+    data,
+    default_dates
   });
 });
 
@@ -104,6 +151,7 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/read-task',  {
+      params: { requested_task_id: req.query.task_id },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
@@ -136,26 +184,16 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
   });
 });
 
-
-router.get('/delete-task', requiresAuth(), async (req, res) => {
-  let data = {};
+router.post('/delete-task', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
-    const apiResponse = await axios.get('http://localhost:5000/delete-task', {
-      headers: { authorization: `${token_type} ${access_token}` }
+    const apiResponse = await axios.delete('http://localhost:5000/delete-task', {
+      headers: { authorization: `${token_type} ${access_token}` },
+      data: { delete_task_id: req.body.task_id }
     });
-    data = apiResponse.data;
-  } catch (e) { }
-  //render the content after a successful api response
-  res.render('deleteTask', { 
-    title: "Delete Task Privilege Scoped Page", 
-    isAuthenticated: req.oidc.isAuthenticated(),
-    user: req.oidc.user,
-    data
-  });
+  } catch (e) { console.log(e); }
+  res.redirect("/tasks-overview");
 });
-
-
 
 //post project data
 router.post("/create-sprint", requiresAuth(), async (req, res) => {
@@ -169,16 +207,20 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
   data.newDueDate = (moment(dueDate).isValid()) ? moment(dueDate).toDate() : moment(new Date()).add(7, 'D').toDate();
   //update status and name variables if needed
   data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
-  data.newName = (data.newName) ? data.newName : 'New Project';
-  console.log(data.newName);
-  console.log(data.newStatus);
-  console.log(data.newStartDate);
-  console.log(data.newDueDate);
+  data.newName = (data.newName) ? data.newName : 'New Sprint';
   try {
     const apiResponse = await axios.post('http://localhost:5000/create-sprint', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
+    const responseData = apiResponse.body;
+    console.log(responseData);
     res.redirect("/sprints-overview");
+    // res.redirect(url.format({
+    //   pathname: "/sprints-overview",
+    //   query: {
+    //     sprintId : ,
+    //   }
+    // }));
   } catch (e) { console.log(e); } 
 });
 
@@ -213,11 +255,15 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/read-sprint', {
+      params: { requested_sprint_id: req.query.sprint_id },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
+  // data.start_date = moment(data.start_date).format("MM-DD-YYYY");
+  // data.due_date = moment(data.due_date).format("MM-DD-YYYY");
+  console.log(data.due_date);
   res.render('readSprint', { 
     title: "Read Sprint Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -266,6 +312,19 @@ router.get('/delete-sprint', requiresAuth(), async (req, res) => {
   });
 });
 
+
+
+router.post('/delete-sprint', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  try {
+    const apiResponse = await axios.delete('http://localhost:5000/delete-sprint', {
+      headers: { authorization: `${token_type} ${access_token}` },
+      data: { delete_sprint_id: req.body.sprint_id }
+    });
+  } catch (e) { console.log(e); }
+  res.redirect("/sprints-overview");
+});
+
  
 router.post("/update-project-focus", requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
@@ -275,6 +334,18 @@ router.post("/update-project-focus", requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     res.redirect("/projects-overview");
+  } catch (e) { console.log(e); }
+  
+});
+
+router.post("/update-sprint-focus", requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.put('http://localhost:5000/update-sprint-focus', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    res.redirect("/sprints-overview");
   } catch (e) { console.log(e); }
   
 });
@@ -381,6 +452,17 @@ router.get('/delete-project', requiresAuth(), async (req, res) => {
   });
 });
 
+
+router.post('/delete-project', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  try {
+    const apiResponse = await axios.delete('http://localhost:5000/delete-project', {
+      headers: { authorization: `${token_type} ${access_token}` },
+      data: { delete_project_id: req.body.project_id }
+    });
+  } catch (e) { console.log(e); }
+  res.redirect("/projects-overview");
+});
 
 
 module.exports = router;

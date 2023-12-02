@@ -1,7 +1,7 @@
 <table>
   <thead>
     <tr>
-      <th>Project Name</th>
+      <th>Sprint Name</th>
       <th>Status</th>
       <th>Focus</th>
       <th>Start Date</th>
@@ -15,22 +15,22 @@
     <% data.forEach(item => {%>
       <tr>
         <td>
-          <form action="/read-project" method="GET">
+          <form action="/read-sprint" method="GET">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
               <input type="submit" value="<%=item.name %>" name="submitData"/>
             </div>
           </form>
         </td>
         <td><%=item.status_flag%></td>
         <td>
-          <form action="/update-project-focus" method="POST" id="project-focus-form<%=item.project_id %>">
+          <form action="/update-sprint-focus" method="POST" id="sprint-focus-form<%=item.sprint_id %>">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
               <% if (item.focus_flag > 0) {%>
-                <input type="checkbox" name="project-focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>" checked>
+                <input type="checkbox" name="sprint-focus-check" onclick="onlyOne(this)" value="<%=item.sprint_id %>" checked>
               <%} else { %>
-                <input type="checkbox" name="project-focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>">
+                <input type="checkbox" name="sprint-focus-check" onclick="onlyOne(this)" value="<%=item.sprint_id %>">
               <%} %>
             </div>
           </form>
@@ -38,18 +38,18 @@
         <td><%=item.start_date%></td>
         <td><%=item.due_date%></td>
         <td>  
-          <form action="/update-project" method="GET">
+          <form action="/update-sprint" method="GET">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
-              <input type="submit" value="Update Project" name="submitData"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+              <input type="submit" value="Update Sprint" name="submitData"/>
             </div>
           </form>
         </td>
         <td>  
-          <form action="/delete-project" method="POST">
+          <form action="/delete-sprint" method="POST">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
-              <input type="submit" value="Delete Project" name="submitData"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+              <input type="submit" value="Delete Sprint" name="submitData"/>
             </div>
           </form>
         </td>
@@ -61,7 +61,7 @@
 <script>
   function onlyOne(checkbox) {
     let focusCount = 0;
-    let checkboxes = document.getElementsByName('project-focus-check');
+    let checkboxes = document.getElementsByName('sprint-focus-check');
     checkboxes.forEach((item) => {
         if (item.checked) 
           focusCount++;
@@ -71,7 +71,7 @@
           // console.log(item.checked);
           if (item !== checkbox) item.checked = false;
       });
-      document.getElementById(`project-focus-form${checkbox.value}`).submit();
+      document.getElementById(`sprint-focus-form${checkbox.value}`).submit();
       // checkbox.parentElement.submit();
     } else {
       checkbox.checked = true;

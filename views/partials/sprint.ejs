@@ -1,13 +1,15 @@
 <table>
   <thead>
     <tr>
-      <th>Project Name</th>
+      <th>Sprint Name</th>
       <th>Status</th>
       <th>Focus</th>
       <th>Start Date</th>
       <th>Due Date</th>
+      <th>Sprint Result</th>
       <th>Update</th>
       <th>Delete</th>
+
     </tr>
   </thead>
   <tbody id="data-output">
@@ -26,19 +28,20 @@
         </td>
         <td><%=item.start_date%></td>
         <td><%=item.due_date%></td>
+        <td><%=item.sprint_result%></td>
         <td>  
-          <form action="/update-project" method="GET">
+          <form action="/update-sprint" method="GET">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
-              <input type="submit" value="Update Project" name="submitData"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+              <input type="submit" value="Update Sprint" name="submitData"/>
             </div>
           </form>
         </td>
         <td>  
-          <form action="/delete-project" method="POST">
+          <form action="/delete-sprint" method="POST">
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
-              <input type="submit" value="Delete Project" name="submitData"/>
+              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+              <input type="submit" value="Delete Sprint" name="submitData"/>
             </div>
           </form>
         </td>
