@@ -23,9 +23,9 @@
           </form>
         </td>
         <td><%=item.status_flag%></td>
-        <td>
+        <td >
           <form action="/update-project-focus" method="POST" id="project-focus-form<%=item.project_id %>">
-            <div class="input-field">
+            <div class="input-field" style="text-align: center;">
               <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
               <% if (item.focus_flag > 0) {%>
                 <input type="checkbox" name="project-focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>" checked>
@@ -57,6 +57,7 @@
     <% }); %>
   </tbody>
 </table>
+
 
 <script>
   function onlyOne(checkbox) {

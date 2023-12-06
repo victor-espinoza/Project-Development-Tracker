@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requiresAuth } = require('express-openid-connect');
 const axios = require('axios');
-const moment = require('moment');
+const moment = require('moment'); 
 
 
 router.get('/', (req, res) => {
@@ -24,11 +24,7 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    data.forEach(item => {
-      // moment(data.newStartDate).format("YYYY-MM-DD");
-      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
-      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
-    });
+    formatDates(data, false);
   } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('sprintsOverview', { 
@@ -49,11 +45,7 @@ router.get('/tasks-overview', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    data.forEach(item => {
-      // moment(data.newStartDate).format("YYYY-MM-DD");
-      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
-      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
-    });
+    formatDates(data, false);
   } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('tasksOverview', { 
@@ -74,11 +66,7 @@ router.get('/projects-overview', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    data.forEach(item => {
-      // moment(data.newStartDate).format("YYYY-MM-DD");
-      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
-      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
-    });
+    formatDates(data, false);
   } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('projectsOverview', { 
@@ -109,7 +97,6 @@ router.post("/create-task", requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    console.log(responseData);
     res.redirect("/tasks-overview");
     // res.redirect(url.format({
     //   pathname: "/tasks-overview",
@@ -155,6 +142,8 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, false);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('readTask', { 
@@ -174,6 +163,8 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, true);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('updateTask', { 
@@ -213,7 +204,6 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    console.log(responseData);
     res.redirect("/sprints-overview");
     // res.redirect(url.format({
     //   pathname: "/sprints-overview",
@@ -259,6 +249,8 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, false);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   // data.start_date = moment(data.start_date).format("MM-DD-YYYY");
@@ -281,6 +273,8 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, true);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('updateSprint', { 
@@ -329,11 +323,12 @@ router.post('/delete-sprint', requiresAuth(), async (req, res) => {
 router.post("/update-project-focus", requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
+  const refererURL = req.headers.referer;
   try {
     const apiResponse = await axios.put('http://localhost:5000/update-project-focus', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    res.redirect("/projects-overview");
+    res.redirect(refererURL); //redirect back to referer url
   } catch (e) { console.log(e); }
   
 });
@@ -341,11 +336,12 @@ router.post("/update-project-focus", requiresAuth(), async (req, res) => {
 router.post("/update-sprint-focus", requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
+  const refererURL = req.headers.referer;
   try {
     const apiResponse = await axios.put('http://localhost:5000/update-sprint-focus', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    res.redirect("/sprints-overview");
+    res.redirect(refererURL);
   } catch (e) { console.log(e); }
   
 });
@@ -403,6 +399,8 @@ router.get('/read-project', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, false);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('readProject', { 
@@ -419,9 +417,12 @@ router.get('/update-project', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/update-project', {
+      params: { requested_project_id: req.query.project_id, },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    formatDates(data, true);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('updateProject', { 
@@ -432,6 +433,24 @@ router.get('/update-project', requiresAuth(), async (req, res) => {
   });
 });
 
+
+router.post('/update-project', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.patch('http://localhost:5000/update-project', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    res.redirect("/projects-overview");
+    // res.redirect(url.format({
+    //   pathname: "/tasks-overview",
+    //   query: {
+    //     sprintId : ,
+    //   }
+    // }));
+  } catch (e) { console.log(e); } 
+});
 
 
 router.get('/delete-project', requiresAuth(), async (req, res) => {
@@ -464,5 +483,20 @@ router.post('/delete-project', requiresAuth(), async (req, res) => {
   res.redirect("/projects-overview");
 });
 
+
+function formatDates(data, inputFieldFlag) {
+  //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+  data.forEach(item => {
+    // moment(data.newStartDate).format("YYYY-MM-DD");
+    if(inputFieldFlag) {
+      item.start_date = moment(item.start_date).format("YYYY-MM-DD");
+      item.due_date = moment(item.due_date).format("YYYY-MM-DD");
+    }
+    else {
+      item.start_date = moment(item.start_date).format("MM/DD/YYYY");
+      item.due_date = moment(item.due_date).format("MM/DD/YYYY");
+    }
+  });
+}
 
 module.exports = router;
