@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title><%=title || "Project Development Tracker" %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+  <body onload="document.getElementById('project_form').submit()">
+    <nav> 
+      <ul>
+        <li><a href="/"><button>Home</button></a></li>
+        <% if(!isAuthenticated) { %>
+          <li><a href="/login/">Login</a></li>
+        <% } else { %>
+          <li><a href="/sprints-overview/">Sprints Overview</a></li>
+          <li><a href="/tasks-overview/">Tasks Overview</a></li>
+          <li><a href="/projects-overview/">Projects Overview</a></li>
+          <li><a href="/create-task/">Create Task (Scoped)</a></li>
+          <li><a href="/read-task/">Read Task (Scoped)</a></li>
+          <li><a href="/update-task/">Update Task (Scoped)</a></li>
+          <li><a href="/delete-task/">Delete Task (Scoped)</a></li>
+          <li><a href="/create-sprint/">Create Sprint (Scoped)</a></li>
+          <li><a href="/read-sprint/">Read Sprint (Scoped)</a></li>
+          <li><a href="/update-sprint/">Update Sprint (Scoped)</a></li>
+          <li><a href="/delete-sprint/">Delete Sprint (Scoped)</a></li>
+          <li><a href="/create-project/">Create Project (Scoped)</a></li>
+          <li><a href="/read-project/">Read Project(Scoped)</a></li>
+          <li><a href="/update-project/">Update Project (Scoped)</a></li>
+          <li><a href="/delete-project/">Delete Project (Scoped)</a></li>
+          <li><a href="/logout/">Logout</a></li>
+        <% } %>
+      </ul>
+    </nav>
+    <h1><%=title %></h1>
+
+    <form action="/fix-project-focus" id="project_form" method="POST">
+      <input type="hidden" value="<%=data.project_id %>" name="project_id"/>
+    </form>
+
+  </body>
+</html>

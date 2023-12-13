@@ -3,7 +3,7 @@ const router = express.Router();
 const { requiresAuth } = require('express-openid-connect');
 const axios = require('axios');
 const moment = require('moment'); 
-
+const querystring = require('querystring'); 
 
 router.get('/', (req, res) => {
   // console.log(req.oidc.isAuthenticated());
@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     title: "Express Demo For Beginners", 
     isAuthenticated: req.oidc.isAuthenticated(),
     user: req.oidc.user,
-  });
+  }); 
 });
 
 
@@ -255,7 +255,6 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
   //render the content after a successful api response
   // data.start_date = moment(data.start_date).format("MM-DD-YYYY");
   // data.due_date = moment(data.due_date).format("MM-DD-YYYY");
-  console.log(data.due_date);
   res.render('readSprint', { 
     title: "Read Sprint Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -437,20 +436,62 @@ router.get('/update-project', requiresAuth(), async (req, res) => {
 router.post('/update-project', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
+  // console.log(data);
   try {
     const apiResponse = await axios.patch('http://localhost:5000/update-project', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    res.redirect("/projects-overview");
-    // res.redirect(url.format({
-    //   pathname: "/tasks-overview",
-    //   query: {
-    //     sprintId : ,
-    //   }
-    // }));
+    // console.log(data);
+
+    const query = querystring.stringify({
+      project_id: data.project_id
+    });
+    res.redirect("/fix-project-focus/?" + query);
   } catch (e) { console.log(e); } 
 });
+
+router.get("/fix-project-focus", requiresAuth(), async (req, res) => {
+  console.log(req.query);
+  let data = {};
+  const { token_type, access_token } = req.oidc.accessToken; 
+  try {
+    const apiResponse = await axios.get('http://localhost:5000/fix-project-focus',  {
+      params: { requested_project_id: req.query.project_id },
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    data = apiResponse.data;
+  } catch (e) { console.log(e); }
+  console.log(data);
+  //render the content after a successful api response
+  res.render('fixProjectFocus', { 
+    title: "Fix Project Focus Scoped Page", 
+    isAuthenticated: req.oidc.isAuthenticated(),
+    user: req.oidc.user,
+    data
+  });
+});
+
+
+router.post('/fix-project-focus', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  console.log("Post Endpoint Reached");
+  console.log(data);
+  // try {
+  //   const apiResponse = await axios.patch('http://localhost:5000/update-project', {data}, {
+  //     headers: { authorization: `${token_type} ${access_token}` }
+  //   });
+  //   const responseData = apiResponse.body;
+  //   // console.log(data);
+
+  //   const query = querystring.stringify({
+  //     project_id: data.project_id
+  //   });
+  //   res.redirect("/fix-project-focus/?" + query);
+  // } catch (e) { console.log(e); } 
+});
+
 
 
 router.get('/delete-project', requiresAuth(), async (req, res) => {

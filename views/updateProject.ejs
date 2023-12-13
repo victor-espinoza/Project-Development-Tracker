@@ -31,18 +31,17 @@
           </td> 
           <td>
             <div class="input-field"> 
-              <input type='hidden' value="0" name="project-focus">
               <% if (item.focus_flag > 0) {%>
-                <input type="checkbox" name="project-focus" value="1" checked>
+                <input type="checkbox" name="focus" value=1 checked>
               <%} else { %>
-                <input type="checkbox" name="project-focus"  value="0">
+                <input type="checkbox" name="focus" value=1> 
               <%} %>
             </div>
           </td>
           <td>
             <div class="input-field">
               <input type="date" name="newStartDate" value="<%=item.start_date %>"  class="date-input"/>
-            </div> 
+            </div>  
           </td>
           <td>
             <div class="input-field">
@@ -65,13 +64,5 @@
   <%= JSON.stringify(data, null, 2) %>
 </pre>
 
-<script>
-  function updateValue(checkbox) {
-    if (checkbox.checked)
-      checkbox.value = "1";
-    else 
-      checkbox.value = "0";
-  }
-</script>
 
 <%- include('partials/footer') -%>
