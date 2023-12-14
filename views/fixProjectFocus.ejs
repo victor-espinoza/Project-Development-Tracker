@@ -36,6 +36,8 @@
 
     <form action="/fix-project-focus" id="project_form" method="POST">
       <input type="hidden" value="<%=data.project_id %>" name="project_id"/>
+      <input type="hidden" value="<%=data.focus_status %>" name="isFocused"/>
+      <input type="hidden" value="<%=data.total_checks %>" name="checkmarksCount"/>
     </form>
 
   </body>

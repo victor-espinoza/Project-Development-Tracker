@@ -269,11 +269,12 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/update-sprint', {
+      params: { requested_sprint_id: req.query.sprint_id, },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, true);
+    formatDates(data.sprint, true);
   } catch (e) { console.log('Not Authorized to view page...'); }
   //render the content after a successful api response
   res.render('updateSprint', { 
@@ -282,8 +283,25 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
     user: req.oidc.user,
     data
   });
+
 });
 
+router.post('/update-sprint', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.patch('http://localhost:5000/update-sprint', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    // console.log(data);
+
+    const query = querystring.stringify({
+      sprint_id: data.sprint_id
+    });
+    res.redirect("/fix-sprint-focus/?" + query);
+  } catch (e) { console.log(e); } 
+});
 
 
 router.get('/delete-sprint', requiresAuth(), async (req, res) => {
@@ -436,7 +454,6 @@ router.get('/update-project', requiresAuth(), async (req, res) => {
 router.post('/update-project', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
-  // console.log(data);
   try {
     const apiResponse = await axios.patch('http://localhost:5000/update-project', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
@@ -478,18 +495,14 @@ router.post('/fix-project-focus', requiresAuth(), async (req, res) => {
   const data = req.body;
   console.log("Post Endpoint Reached");
   console.log(data);
-  // try {
-  //   const apiResponse = await axios.patch('http://localhost:5000/update-project', {data}, {
-  //     headers: { authorization: `${token_type} ${access_token}` }
-  //   });
-  //   const responseData = apiResponse.body;
-  //   // console.log(data);
-
-  //   const query = querystring.stringify({
-  //     project_id: data.project_id
-  //   });
-  //   res.redirect("/fix-project-focus/?" + query);
-  // } catch (e) { console.log(e); } 
+  try {
+    const apiResponse = await axios.patch('http://localhost:5000/fix-project-focus', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    // console.log(data);
+    res.redirect("/projects-overview"); 
+  } catch (e) { console.log(e); } 
 });
 
 
