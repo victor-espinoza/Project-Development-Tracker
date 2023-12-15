@@ -22,7 +22,6 @@
         <form action="/update-sprint" method="POST">
           <td>
             <div class="input-field">
-              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
               <select name="project_id" id="project-drop-down">   
                 <% data.projects.forEach(project => {%>
                   <% if (project.project_id == item.project_id) { %>

@@ -13,7 +13,7 @@
     </thead>
     <tbody id="data-output">
       <!-- Populate table  -->
-      <% data.forEach(item => {%>
+      <% data.tasks.forEach(item => {%>
         <tr>
           <td>
             <form action="/read-task" method="GET">
@@ -48,3 +48,7 @@
     </tbody>
   </table>
 <%} %>
+
+<pre>
+  <%= JSON.stringify(data, null, 2) %>
+</pre>

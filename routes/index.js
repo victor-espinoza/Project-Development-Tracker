@@ -6,7 +6,6 @@ const moment = require('moment');
 const querystring = require('querystring'); 
 
 router.get('/', (req, res) => {
-  // console.log(req.oidc.isAuthenticated());
   res.render('index', { 
     title: "Express Demo For Beginners", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -24,8 +23,8 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, false);
-  } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
+    formatDates(data.sprints, false);
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('sprintsOverview', { 
     title: "Sprints Overview:", 
@@ -33,9 +32,9 @@ router.get('/sprints-overview', requiresAuth(), async (req, res) => {
     user: req.oidc.user,
     data
   });
-});
+}); 
 
-
+ 
 router.get('/tasks-overview', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
@@ -45,8 +44,8 @@ router.get('/tasks-overview', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, false);
-  } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
+    formatDates(data.tasks, false); 
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('tasksOverview', { 
     title: "Tasks Overview:", 
@@ -67,7 +66,7 @@ router.get('/projects-overview', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, false);
-  } catch (e) { console.log(e); }//console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('projectsOverview', { 
     title: "Projects Overview:", 
@@ -98,12 +97,6 @@ router.post("/create-task", requiresAuth(), async (req, res) => {
     });
     const responseData = apiResponse.body;
     res.redirect("/tasks-overview");
-    // res.redirect(url.format({
-    //   pathname: "/tasks-overview",
-    //   query: {
-    //     sprintId : ,
-    //   }
-    // }));
   } catch (e) { console.log(e); } 
 });
 
@@ -121,7 +114,7 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('createTask', { 
     title: "Create Task Privilege Scoped Page", 
@@ -144,7 +137,7 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, false);
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('readTask', { 
     title: "Read Task Privilege Scoped Page", 
@@ -165,7 +158,7 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, true);
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('updateTask', { 
     title: "Update Task Privilege Scoped Page", 
@@ -205,12 +198,6 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
     });
     const responseData = apiResponse.body;
     res.redirect("/sprints-overview");
-    // res.redirect(url.format({
-    //   pathname: "/sprints-overview",
-    //   query: {
-    //     sprintId : ,
-    //   }
-    // }));
   } catch (e) { console.log(e); } 
 });
 
@@ -228,7 +215,7 @@ router.get('/create-sprint', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('createSprint', { 
     title: "Create Sprint Privilege Scoped Page", 
@@ -251,10 +238,7 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, false);
-  } catch (e) { console.log('Not Authorized to view page...'); }
-  //render the content after a successful api response
-  // data.start_date = moment(data.start_date).format("MM-DD-YYYY");
-  // data.due_date = moment(data.due_date).format("MM-DD-YYYY");
+  } catch (e) { console.log(e); }
   res.render('readSprint', { 
     title: "Read Sprint Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
@@ -275,7 +259,7 @@ router.get('/update-sprint', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data.sprint, true);
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('updateSprint', { 
     title: "Update Sprint Privilege Scoped Page", 
@@ -294,8 +278,6 @@ router.post('/update-sprint', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    // console.log(data);
-
     const query = querystring.stringify({
       sprint_id: data.sprint_id
     });
@@ -303,17 +285,48 @@ router.post('/update-sprint', requiresAuth(), async (req, res) => {
   } catch (e) { console.log(e); } 
 });
 
+router.get("/fix-sprint-focus", requiresAuth(), async (req, res) => {
+  let data = {};
+  const { token_type, access_token } = req.oidc.accessToken; 
+  try {
+    const apiResponse = await axios.get('http://localhost:5000/fix-sprint-focus',  {
+      params: { requested_sprint_id: req.query.sprint_id },
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    data = apiResponse.data;
+  } catch (e) { console.log(e); }
+  //render the content after a successful api response
+  res.render('fixSprintFocus', { 
+    title: "Fix Sprint Focus Scoped Page", 
+    isAuthenticated: req.oidc.isAuthenticated(),
+    user: req.oidc.user,
+    data
+  });
+});
+
+
+router.post('/fix-sprint-focus', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.patch('http://localhost:5000/fix-sprint-focus', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    res.redirect("/sprints-overview"); 
+  } catch (e) { console.log(e); } 
+});
+
 
 router.get('/delete-sprint', requiresAuth(), async (req, res) => {
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
-  //console.log(`${token_type}: ${access_token}`); 
   try {
     const apiResponse = await axios.get('http://localhost:5000/delete-sprint', {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('deleteSprint', { 
     title: "Delete Sprint Privilege Scoped Page", 
@@ -375,7 +388,7 @@ router.get('/create-project', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = {current_date: curr_date, due_date: due_date};
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('createProject', { 
     title: "Create Project Privilege Scoped Page", 
@@ -403,7 +416,7 @@ router.post("/create-project", requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     res.redirect("/projects-overview");
-  } catch (e) { console.log(''); } 
+  } catch (e) { console.log(e); } 
 });
 
 
@@ -418,7 +431,7 @@ router.get('/read-project', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, false);
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('readProject', { 
     title: "Read Project Privilege Scoped Page", 
@@ -440,7 +453,7 @@ router.get('/update-project', requiresAuth(), async (req, res) => {
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, true);
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('updateProject', { 
     title: "Update Project Privilege Scoped Page", 
@@ -459,7 +472,6 @@ router.post('/update-project', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    // console.log(data);
 
     const query = querystring.stringify({
       project_id: data.project_id
@@ -469,7 +481,6 @@ router.post('/update-project', requiresAuth(), async (req, res) => {
 });
 
 router.get("/fix-project-focus", requiresAuth(), async (req, res) => {
-  console.log(req.query);
   let data = {};
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
@@ -479,7 +490,6 @@ router.get("/fix-project-focus", requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
   } catch (e) { console.log(e); }
-  console.log(data);
   //render the content after a successful api response
   res.render('fixProjectFocus', { 
     title: "Fix Project Focus Scoped Page", 
@@ -493,14 +503,11 @@ router.get("/fix-project-focus", requiresAuth(), async (req, res) => {
 router.post('/fix-project-focus', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
-  console.log("Post Endpoint Reached");
-  console.log(data);
   try {
     const apiResponse = await axios.patch('http://localhost:5000/fix-project-focus', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     const responseData = apiResponse.body;
-    // console.log(data);
     res.redirect("/projects-overview"); 
   } catch (e) { console.log(e); } 
 });
@@ -515,7 +522,7 @@ router.get('/delete-project', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
-  } catch (e) { console.log('Not Authorized to view page...'); }
+  } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('deleteProject', { 
     title: "Delete Project Privilege Scoped Page", 

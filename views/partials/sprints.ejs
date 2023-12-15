@@ -1,6 +1,7 @@
 <table>
   <thead>
     <tr>
+      <th>Project Name</th>
       <th>Sprint Name</th>
       <th>Status</th>
       <th>Focus</th>
@@ -10,10 +11,16 @@
       <th>Delete</th>
     </tr>
   </thead>
-  <tbody id="data-output">
+  <tbody id="sprints-output">
     <!-- Populate table  -->
-    <% data.forEach(item => {%>
+    <% data.sprints.forEach(item => {%>
       <tr>
+        <% for (const project of data.projects) {%>
+          <% if (project.project_id === item.project_id) { %>
+            <td><%=project.name%></td>
+            <% break; %>
+          <% } %>
+        <% } %>
         <td>
           <form action="/read-sprint" method="GET">
             <div class="input-field">
