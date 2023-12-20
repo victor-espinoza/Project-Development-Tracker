@@ -1,15 +1,88 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" />
-    <p class="name">
-      <%= user.nickname.charAt(0).toUpperCase() + user.nickname.slice(1) %>
-    </p>
-  </div>
-<% } %>
+<table>
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Sprint Name</th>
+      <th>Task Name</th>
+      <th>Owner</th>
+      <th>Status</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+      <th>Update</th>
+    </tr>
+  </thead>
+
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.tasks.forEach(item => {%>
+      <tr>
+        <form action="/update-task" method="POST">
+          <td>
+            <div class="input-field">
+              <select name="project_id" id="project-drop-down">   
+                <% data.projects.forEach(project => {%>
+                  <% if (project.project_id == item.project_id) { %>
+                    <option value="<%=project.project_id %>" selected><%=project.name %></option>
+                  <% } else { %>
+                    <option value="<%=project.project_id %>"><%=project.name %></option>
+                  <% } %>
+                <% }); %>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <select name="sprint_id" id="sprint-drop-down">   
+                <% data.sprints.forEach(sprint => {%>
+                  <% if (sprint.sprintt_id == item.sprint_id) { %>
+                    <option value="<%=sprint.sprint_id %>" selected><%=sprint.name %></option>
+                  <% } else { %>
+                    <option value="<%=sprint.sprint_id %>"><%=sprint.name %></option>
+                  <% } %>
+                <% }); %>
+              </select>
+            </div>   
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
+              <input type="text" name="newName" placeholder="<%=item.name %>" id="newName"/>
+            </div>
+          </td>
+          <td>
+            <div class="input-field"> 
+              <input type="text" name="newOwner" placeholder="<%=item.task_owner %>" id="newName"/>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="text" name="newStatus" placeholder="<%=item.status_flag%>"/>
+            </div>
+          </td> 
+          <td>
+            <div class="input-field">
+              <input type="date" name="newStartDate" value="<%=item.start_date %>"  class="date-input"/>
+            </div>  
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="date" name="newDueDate" value="<%=item.due_date%>" class="date-input" />
+            </div>
+          </td>
+          <td>
+            <div class="input-field"> 
+              <input type="submit" value="Sumbit Changes" name="submitData"/>
+            </div>
+          </td>
+        </form> 
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>

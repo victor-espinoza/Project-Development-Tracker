@@ -2,6 +2,8 @@
   <table>
     <thead>
       <tr>
+        <th>Project Name</th>
+        <th>Sprint Name</th>
         <th>Task Name</th>
         <th>Status</th>
         <th>Owner</th>
@@ -15,6 +17,13 @@
       <!-- Populate table  -->
       <% data.tasks.forEach(item => {%>
         <tr>
+          <% for (const project of data.projects) {%>
+            <% if (project.project_id === item.project_id) { %>
+              <td><%=project.name%></td>
+              <% break; %>
+            <% } %>
+          <% } %>
+          <td>???</td>
           <td>
             <form action="/read-task" method="GET">
               <div class="input-field">
@@ -23,7 +32,7 @@
               </div>
             </form>
           </td>
-          <td><%=item.status_flag%></td>
+          <td><%=item.task_status%></td>
           <td><%=item.task_owner%></td>
           <td><%=item.start_date%></td>
           <td><%=item.due_date%></td>

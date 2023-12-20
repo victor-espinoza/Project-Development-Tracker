@@ -1,6 +1,12 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
+
+
 <%- include('partials/sprints') -%>
+
+<pre>
+  <%= JSON.stringify(data, null, 2) %>
+</pre>
 
 <%- include('partials/footer') -%>

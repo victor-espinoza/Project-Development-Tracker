@@ -134,7 +134,8 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
       params: { requested_task_id: req.query.task_id },
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    data = apiResponse.data;
+    data = apiResponse.data; 
+    console.log(data);
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data, false);
   } catch (e) { console.log(e); }
@@ -153,11 +154,13 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/update-task', {
+      params: { requested_task_id: req.query.task_id, },
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    // console.log(data);
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, true);
+    formatDates(data.tasks, true);
   } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('updateTask', { 
@@ -166,6 +169,7 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
     user: req.oidc.user,
     data
   });
+
 });
 
 router.post('/delete-task', requiresAuth(), async (req, res) => {
@@ -196,9 +200,13 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
     const apiResponse = await axios.post('http://localhost:5000/create-sprint', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    const responseData = apiResponse.body;
-    res.redirect("/sprints-overview");
+    const responseData = apiResponse.data;
+    const query = querystring.stringify({
+      sprint_id: responseData[0].sprint_id
+    });
+    res.redirect("/fix-sprint-focus/?" + query);
   } catch (e) { console.log(e); } 
+
 });
 
 
@@ -237,7 +245,7 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, false);
+    formatDates(data.sprints, false); 
   } catch (e) { console.log(e); }
   res.render('readSprint', { 
     title: "Read Sprint Privilege Scoped Page", 
@@ -415,7 +423,12 @@ router.post("/create-project", requiresAuth(), async (req, res) => {
     const apiResponse = await axios.post('http://localhost:5000/create-project', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
     });
-    res.redirect("/projects-overview");
+    const responseData = apiResponse.data;
+    const query = querystring.stringify({
+      project_id: responseData[0].project_id
+    });
+    res.redirect("/fix-project-focus/?" + query);
+    
   } catch (e) { console.log(e); } 
 });
 
