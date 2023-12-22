@@ -172,6 +172,19 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
 
 });
 
+router.post('/update-task', requiresAuth(), async (req, res) => {
+  const { token_type, access_token } = req.oidc.accessToken; 
+  const data = req.body;
+  try {
+    const apiResponse = await axios.patch('http://localhost:5000/update-task', {data}, {
+      headers: { authorization: `${token_type} ${access_token}` }
+    });
+    const responseData = apiResponse.body;
+    console.log(responseData);
+    res.redirect("/tasks-overview");
+  } catch (e) { console.log(e); } 
+});
+
 router.post('/delete-task', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
@@ -206,7 +219,7 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
     });
     res.redirect("/fix-sprint-focus/?" + query);
   } catch (e) { console.log(e); } 
-
+ 
 });
 
 

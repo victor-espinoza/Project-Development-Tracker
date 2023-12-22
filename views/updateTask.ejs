@@ -35,15 +35,24 @@
           </td>
           <td>
             <div class="input-field">
-              <select name="sprint_id" id="sprint-drop-down">   
+              <% let sprintExists = false;%>
+              <% for (const sprint of data.sprints) {%>
+                <% if (sprint.sprint_id === item.sprint_id) { %>
+                  <input type="text" list="sprints" name="sprintName" id="sprintInput" value="<%=sprint.name %>" autocomplete="off"/>
+                  <input type=hidden name="sprint_id" id="sprintInput-hidden" value="<%=sprint.sprint_id %>"/>
+                  <% sprintExists = true;%>
+                  <% break; %>
+                <% } %>
+              <% } %>
+              <% if (!sprintExists) {%>
+                <input type="text" list="sprints" name="sprintName" id="sprintInput" autocomplete="off"/>
+                <input type=hidden name="sprint_id" id="sprintInput-hidden" value="-1"/>
+              <% } %>
+              <datalist name="sprint_name" id="sprints">
                 <% data.sprints.forEach(sprint => {%>
-                  <% if (sprint.sprintt_id == item.sprint_id) { %>
-                    <option value="<%=sprint.sprint_id %>" selected><%=sprint.name %></option>
-                  <% } else { %>
-                    <option value="<%=sprint.sprint_id %>"><%=sprint.name %></option>
-                  <% } %>
+                  <option value="<%=sprint.sprint_id %>"><%=sprint.name %></option>
                 <% }); %>
-              </select>
+              </datalist>
             </div>   
           </td>
           <td>
@@ -59,7 +68,7 @@
           </td>
           <td>
             <div class="input-field">
-              <input type="text" name="newStatus" placeholder="<%=item.status_flag%>"/>
+              <input type="text" name="newStatus" placeholder="<%=item.task_status%>"/>
             </div>
           </td> 
           <td>
@@ -86,5 +95,32 @@
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>
+
+<script>
+  document.querySelector('#sprintInput').addEventListener('input', function(e) {
+    let input = e.target,   
+        list = input.list,
+        options = list.querySelectorAll(' option'),
+        selectedOption = list.querySelectorAll(' option[value="'+input.value+'"]'),
+        hiddenInput = document.getElementById(input.getAttribute('id') + '-hidden'),
+        inputValue = input.value;
+
+    hiddenInput.value = -1; //default value for custom sprint names
+
+    //update hidden value and update the input textbox's displayed text if there is a datalist option match
+    if (selectedOption.length > 0) {
+      hiddenInput.value = input.value;
+      input.value = selectedOption[0].innerText;
+    }
+
+    //update the hidden value if the typed input matches the text of any options in the datalist
+    for (const option of options) {
+      if (option.innerText === inputValue) {
+        hiddenInput.value = option.value;
+        break;
+      }
+    }
+  });
+</script>
 
 <%- include('partials/footer') -%>
