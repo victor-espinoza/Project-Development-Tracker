@@ -5,7 +5,7 @@
   <thead>
     <tr>
       <th>Project</th>
-      <th>Sprint Name</th>
+      <th>Sprint</th>
       <th>Task Name</th>
       <th>Owner</th>
       <th>Status</th>
@@ -22,14 +22,14 @@
         <form action="/update-task" method="POST">
           <td>
             <div class="input-field">
-              <select name="project_id" id="project-drop-down">   
+              <select name="project_id" id="project-drop-down" onChange="changesprints(this.value);">
                 <% data.projects.forEach(project => {%>
                   <% if (project.project_id == item.project_id) { %>
                     <option value="<%=project.project_id %>" selected><%=project.name %></option>
                   <% } else { %>
                     <option value="<%=project.project_id %>"><%=project.name %></option>
                   <% } %>
-                <% }); %>
+                <% }); %> 
               </select>
             </div>
           </td>
@@ -49,9 +49,13 @@
                 <input type=hidden name="sprint_id" id="sprintInput-hidden" value="-1"/>
               <% } %>
               <datalist name="sprint_name" id="sprints">
-                <% data.sprints.forEach(sprint => {%>
-                  <option value="<%=sprint.sprint_id %>"><%=sprint.name %></option>
-                <% }); %>
+                <% for (pairInfo of projSprPairs) { %>
+                  <% if (pairInfo.project.project_id === item.project_id) %>{
+                    <% for (sprint of pairInfo.sprints) { %>
+                      <option value="<%=sprint.sprint_id %>"><%=sprint.sprint_name %></option>
+                    <% } %>
+                    <% break; %>
+                  <% } %>
               </datalist>
             </div>   
           </td>
@@ -83,7 +87,7 @@
           </td>
           <td>
             <div class="input-field"> 
-              <input type="submit" value="Sumbit Changes" name="submitData"/>
+              <input type="submit" value="Submit Changes" name="submitData"/>
             </div>
           </td>
         </form> 
@@ -95,6 +99,18 @@
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>
+
+<p>Newly Created Pairs:</p>
+<pre>
+  <%= JSON.stringify(projSprPairs, null, 2) %>
+</pre>
+
+
+<%-'<script>'%>
+  let projSprPairs = <%-JSON.stringify(projSprPairs)%>;
+<%-'</script>'%>
+
+
 
 <script>
   document.querySelector('#sprintInput').addEventListener('input', function(e) {
@@ -121,6 +137,26 @@
       }
     }
   });
+
+
+  function changesprints(selectedId) {
+    if (selectedId.length == 0) 
+      document.getElementById("sprintInput").innerHTML = "<option></option>";
+    else {
+      let sprintOptions = "";
+      
+      for (pairInfo of projSprPairs) {
+        if (JSON.stringify(pairInfo.project.project_id) === selectedId) {
+          for (sprint of pairInfo.sprints) {
+            sprintOptions += `<option value="${sprint.sprint_id}">${sprint.sprint_name}</option>`;
+          }
+          break;
+        }
+      }
+      document.getElementById("sprints").innerHTML = sprintOptions;
+    }
+    }
+
 </script>
 
 <%- include('partials/footer') -%>

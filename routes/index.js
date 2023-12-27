@@ -104,6 +104,7 @@ router.post("/create-task", requiresAuth(), async (req, res) => {
 //create sprint data
 router.get('/create-task', requiresAuth(), async (req, res) => {
   let data = {};
+  let projSprPairs = [];
   //create default dates for the start/due date fields
   const curr_date = moment(new Date()).format('YYYY-MM-DD');
   const due_date = moment(curr_date).add(1, 'W').format('YYYY-MM-DD');
@@ -114,6 +115,26 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    data.projects.forEach(project => {
+      let objectData = {
+        project: {
+          project_id : project.project_id,
+          project_name : project.name
+        },
+        sprints : []
+      };
+      data.sprints.forEach(sprint => {
+        if (sprint.project_id === project.project_id) {
+          let sprintData = {
+            sprint_id : sprint.sprint_id,
+            sprint_name : sprint.name,
+          };
+          objectData.sprints.push(sprintData);
+        } //end if
+      }); //end forEach()
+      projSprPairs.push(objectData);
+    }); 
+
   } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('createTask', { 
@@ -121,6 +142,7 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
     isAuthenticated: req.oidc.isAuthenticated(),
     user: req.oidc.user,
     data,
+    projSprPairs,
     default_dates
   });
 });
@@ -151,6 +173,7 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
 
 router.get('/update-task', requiresAuth(), async (req, res) => {
   let data = {};
+  let projSprPairs = [];
   const { token_type, access_token } = req.oidc.accessToken; 
   try {
     const apiResponse = await axios.get('http://localhost:5000/update-task', {
@@ -158,6 +181,26 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data;
+    data.projects.forEach(project => {
+      let objectData = {
+        project: {
+          project_id : project.project_id,
+          project_name : project.name
+        },
+        sprints : []
+      };
+      data.sprints.forEach(sprint => {
+        if (sprint.project_id === project.project_id) {
+          let sprintData = {
+            sprint_id : sprint.sprint_id,
+            sprint_name : sprint.name,
+          };
+          objectData.sprints.push(sprintData);
+        } //end if
+      }); //end forEach()
+      projSprPairs.push(objectData);
+    }); 
+
     // console.log(data);
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
     formatDates(data.tasks, true);
@@ -167,7 +210,8 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
     title: "Update Task Privilege Scoped Page", 
     isAuthenticated: req.oidc.isAuthenticated(),
     user: req.oidc.user,
-    data
+    data,
+    projSprPairs
   });
 
 });
