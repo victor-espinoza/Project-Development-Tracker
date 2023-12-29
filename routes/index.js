@@ -82,6 +82,7 @@ router.get('/projects-overview', requiresAuth(), async (req, res) => {
 router.post("/create-task", requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
+  console.log(data);
   //convert input dates into the required date format
   const startDate = moment(data.newStartDate).format("YYYY-MM-DD");
   const dueDate = moment(data.newDueDate).format("YYYY-MM-DD");
@@ -91,6 +92,7 @@ router.post("/create-task", requiresAuth(), async (req, res) => {
   //update status and name variables if needed
   data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
   data.newName = (data.newName) ? data.newName : 'New Task';
+  data.newOwner = (data.newOwner) ? data.newOwner : 'Victor';
   try {
     const apiResponse = await axios.post('http://localhost:5000/create-task', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
@@ -119,7 +121,8 @@ router.get('/create-task', requiresAuth(), async (req, res) => {
       let objectData = {
         project: {
           project_id : project.project_id,
-          project_name : project.name
+          project_name : project.name,
+          is_focused: project.focus_flag
         },
         sprints : []
       };
@@ -159,7 +162,7 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
     data = apiResponse.data; 
     console.log(data);
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, false);
+    formatDates(data.tasks, false);
   } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('readTask', { 

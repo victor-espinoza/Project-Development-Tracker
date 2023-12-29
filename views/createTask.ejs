@@ -4,8 +4,8 @@
 <% if(user) { %>
   <form action="/create-task" method="POST">
     <div class="input-field">
-      <label for="projectId">Project:</label>
-      <select name="projectId" id="project-drop-down">   
+      <label for="project_id">Project:</label>
+      <select name="project_id" id="project-drop-down" onChange="changesprints(this.value);">   
         <% data.projects.forEach(item => {%>
           <% if (item.focus_flag) { %>
             <option value="<%=item.project_id %>" selected><%=item.name %></option>
@@ -21,12 +21,13 @@
       <input type=hidden name="sprint_id" id="sprintInput-hidden" value="-1"/>
       <datalist name="sprint_name" id="sprints">
         <% for (pairInfo of projSprPairs) { %>
-          <% if (pairInfo.project.focus_flag) %>{
+          <% if (pairInfo.project.is_focused) { %>
             <% for (sprint of pairInfo.sprints) { %>
               <option value="<%=sprint.sprint_id %>"><%=sprint.sprint_name %></option>
             <% } %>
             <% break; %>
           <% } %>
+        <% } %>
       </datalist>
     </div>   
     <div class="input-field">
@@ -38,8 +39,8 @@
       <input type="text" name="newStatus" placeholder="(Default: In Progress)"/>
     </div>
     <div class="input-field">
-      <label for="owner">Owner:</label>
-      <input type="text" name="owner" placeholder="(Default: Victor)"/>
+      <label for="newOwner">Owner:</label>
+      <input type="text" name="newOwner" placeholder="(Default: Victor)"/>
     </div>
     <div class="input-field">
       <label for="newStartDate">Start Date:</label>
@@ -115,7 +116,7 @@
       }
       document.getElementById("sprints").innerHTML = sprintOptions;
     }
-    }
+  }
 
 </script>
 

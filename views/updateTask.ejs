@@ -12,7 +12,7 @@
       <th>Start Date</th>
       <th>Due Date</th>
       <th>Update</th>
-    </tr>
+    </tr> 
   </thead>
 
   <tbody id="data-output">
@@ -36,12 +36,14 @@
           <td>
             <div class="input-field">
               <% let sprintExists = false;%>
-              <% for (const sprint of data.sprints) {%>
-                <% if (sprint.sprint_id === item.sprint_id) { %>
-                  <input type="text" list="sprints" name="sprintName" id="sprintInput" value="<%=sprint.name %>" autocomplete="off"/>
-                  <input type=hidden name="sprint_id" id="sprintInput-hidden" value="<%=sprint.sprint_id %>"/>
-                  <% sprintExists = true;%>
-                  <% break; %>
+              <% if (item.sprint_id) { %>
+                <% for (const sprint of data.sprints) {%>
+                  <% if (sprint.sprint_id === item.sprint_id) { %>
+                    <input type="text" list="sprints" name="sprintName" id="sprintInput" value="<%=sprint.name %>" autocomplete="off"/>
+                    <input type=hidden name="sprint_id" id="sprintInput-hidden" value="<%=sprint.sprint_id %>"/>
+                    <% sprintExists = true;%>
+                    <% break; %>
+                  <% } %>
                 <% } %>
               <% } %>
               <% if (!sprintExists) {%>
@@ -50,12 +52,13 @@
               <% } %>
               <datalist name="sprint_name" id="sprints">
                 <% for (pairInfo of projSprPairs) { %>
-                  <% if (pairInfo.project.project_id === item.project_id) %>{
+                  <% if (pairInfo.project.project_id === item.project_id) { %>
                     <% for (sprint of pairInfo.sprints) { %>
                       <option value="<%=sprint.sprint_id %>"><%=sprint.sprint_name %></option>
                     <% } %>
                     <% break; %>
                   <% } %>
+                <% } %>
               </datalist>
             </div>   
           </td>
@@ -155,7 +158,7 @@
       }
       document.getElementById("sprints").innerHTML = sprintOptions;
     }
-    }
+  }
 
 </script>
 
