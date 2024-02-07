@@ -30,6 +30,12 @@
         <% } %>
       </datalist>
     </div>   
+    <% for (sprint of data.sprints) { %>
+      <% if (sprint.focus_flag) { %>
+          <input type=hidden name="default_sprint_id" value="<%=sprint.sprint_id %>"/>
+          <% break; %>
+      <% } %>
+    <% } %>
     <div class="input-field">
       <label for="newName">Task Name:</label>
       <input type="text" name="newName" placeholder="(Default: New Task)"/>

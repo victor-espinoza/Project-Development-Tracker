@@ -222,6 +222,7 @@ router.get('/update-task', requiresAuth(), async (req, res) => {
 router.post('/update-task', requiresAuth(), async (req, res) => {
   const { token_type, access_token } = req.oidc.accessToken; 
   const data = req.body;
+  console.log(data);
   try {
     const apiResponse = await axios.patch('http://localhost:5000/update-task', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }

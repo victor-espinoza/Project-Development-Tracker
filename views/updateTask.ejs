@@ -62,6 +62,12 @@
               </datalist>
             </div>   
           </td>
+          <% for (sprint of data.sprints) { %>
+            <% if (sprint.focus_flag) { %>
+                <input type=hidden name="default_sprint_id" value="<%=sprint.sprint_id %>"/>
+                <% break; %>
+            <% } %>
+          <% } %>
           <td>
             <div class="input-field">
               <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
