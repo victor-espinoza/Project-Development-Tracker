@@ -26,7 +26,7 @@ body {
 
 .input-field {
   float: left; 
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 label {
@@ -62,4 +62,13 @@ table td{
 
 #newName {
   width: 230px;
+}
+
+ul.no-bullets {
+  list-style-type: none; /* Remove bullets */
+}
+
+ul.no-bullets li {
+	margin: 50px 10px 10px 10px;
+	padding: 5px;
 }

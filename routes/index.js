@@ -257,6 +257,7 @@ router.post("/create-sprint", requiresAuth(), async (req, res) => {
   //update status and name variables if needed
   data.newStatus = (data.newStatus) ? data.newStatus : 'In Progress';
   data.newName = (data.newName) ? data.newName : 'New Sprint';
+  console.log(data.focus);
   try {
     const apiResponse = await axios.post('http://localhost:5000/create-sprint', {data}, {
       headers: { authorization: `${token_type} ${access_token}` }
