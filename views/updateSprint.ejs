@@ -2,77 +2,72 @@
 
 <h1><%=title %></h1>
 
-<table>
-  <thead>
-    <tr>
-      <th>Project</th>
-      <th>Sprint Name</th>
-      <th>Status</th>
-      <th>Focus</th>
-      <th>Start Date</th>
-      <th>Due Date</th>
-      <th>Update</th>
-    </tr>
-  </thead>
+<ul class="no-bullets">
+  <% data.sprint.forEach(item => {%>
+    <form action="/update-sprint" method="POST"></form>
+      <li>
+        <div class="input-field">
+          <label for="project_id">Project:</label>
+          <select name="project_id" id="project-drop-down">   
+            <% data.projects.forEach(project => {%>
+              <% if (project.project_id == item.project_id) { %>
+                <option value="<%=project.project_id %>" selected><%=project.name %></option>
+              <% } else { %>
+                <option value="<%=project.project_id %>"><%=project.name %></option>
+              <% } %>
+            <% }); %>
+          </select>
+        </div>
 
-  <tbody id="data-output">
-    <!-- Populate table  -->
-    <% data.sprint.forEach(item => {%>
-      <tr>
-        <form action="/update-sprint" method="POST">
-          <td>
-            <div class="input-field">
-              <select name="project_id" id="project-drop-down">   
-                <% data.projects.forEach(project => {%>
-                  <% if (project.project_id == item.project_id) { %>
-                    <option value="<%=project.project_id %>" selected><%=project.name %></option>
-                  <% } else { %>
-                    <option value="<%=project.project_id %>"><%=project.name %></option>
-                  <% } %>
-                <% }); %>
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="input-field">
-              <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
-              <input type="text" name="newName" placeholder="<%=item.name %>" id="newName"/>
-            </div>
-          </td>
-          <td>
-            <div class="input-field">
-              <input type="text" name="newStatus" placeholder="<%=item.sprint_status%>"/>
-            </div>
-          </td> 
-          <td>
-            <div class="input-field"> 
-              <% if (item.focus_flag > 0) {%>
-                <input type="checkbox" name="focus" value=1 checked>
-              <%} else { %>
-                <input type="checkbox" name="focus" value=1 > 
-              <%} %>
-            </div>
-          </td>
-          <td>
-            <div class="input-field">
-              <input type="date" name="newStartDate" value="<%=item.start_date %>"  class="date-input"/>
-            </div>  
-          </td>
-          <td>
-            <div class="input-field">
-              <input type="date" name="newDueDate" value="<%=item.due_date%>" class="date-input" />
-            </div>
-          </td>
-          <td>
-            <div class="input-field"> 
-              <input type="submit" value="Sumbit Changes" name="submitData"/>
-            </div>
-          </td>
-        </form> 
-      </tr>
-    <% }); %>
-  </tbody>
-</table>
+        <div class="input-field">
+          <label for="newName">Sprint Name:</label>
+          <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+          <input type="text" name="newName" placeholder="<%=item.name %>" id="newName"/>
+        </div>
+        
+        <div class="input-field">
+          <label for="newStatus">Status:</label>
+          <input type="text" name="newStatus" placeholder="<%=item.sprint_status%>"/>
+        </div>
+
+        <div class="input-field"> 
+          <label for="focus">Focus:</label>
+          <% if (item.focus_flag > 0) {%>
+            <input type="checkbox" name="focus" value=1 checked>
+          <%} else { %>
+            <input type="checkbox" name="focus" value=1 > 
+          <%} %>
+        </div>
+
+        <div class="input-field">
+          <label for="newStartDate">Start Date:</label>
+          <input type="date" name="newStartDate" value="<%= item.start_date %>" class="date-input"/>
+        </div>
+
+        <div class="input-field">
+          <label for="newDueDate">Due Date:</label> 
+          <input type="date" name="newDueDate" value="<%= item.due_date %>" class="date-input" />
+        </div>
+      </li>
+      <li id="after-text-box">
+        <div class="input-field">
+          <label for="newSprintReview">Sprint Review:</label>
+          <textarea name="newSprintReview" cols="50" rows="10"><%= item.sprint_review %></textarea>
+        </div>
+        <div id="input-field">
+          <label for="newSprintRetrospective">Sprint Retrospective:</label>
+          <textarea name="newSprintRetrospective" cols="50" rows="10"><%= item.sprint_retrospective %></textarea>
+        </div>
+      </li>
+      <li>
+        <div id="new-line">
+          <input type="submit" value="Submit Changes" name="submitData"/>
+        </div>
+      </li>
+    </form>
+  <% }); %> 
+</ul>
+
 
 <pre>
   <%= JSON.stringify(data, null, 2) %>
