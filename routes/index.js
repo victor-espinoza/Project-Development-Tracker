@@ -160,9 +160,9 @@ router.get('/read-task', requiresAuth(), async (req, res) => {
       headers: { authorization: `${token_type} ${access_token}` }
     });
     data = apiResponse.data; 
-    console.log(data);
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data.tasks, false);
+    if (data.tasks)
+      formatDates(data.tasks, false);
   } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('readTask', { 

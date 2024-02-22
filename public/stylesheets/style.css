@@ -30,8 +30,11 @@ body {
 }
 
 label {
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
+	width: fit-content;
+	padding: 2px 5px;
+	margin-bottom: 3px;
 }
 
 /* .date-input {
@@ -74,11 +77,18 @@ ul.no-bullets li {
 }
 
 #after-text-box {
-	margin: 40px 10px 10px 10px;
+	margin: 70px 10px 10px 10px;
 	padding-bottom: 10px;
 }
 
 #new-line {
 	float: left; 
 	margin: 5px;
+}
+
+.label-background {
+	background-color: #ADD8E6;
+	/* background-color: #fff; */
+	border:  thin solid #d4d4d4;
+
 }
