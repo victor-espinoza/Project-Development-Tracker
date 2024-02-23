@@ -2,7 +2,81 @@
 
 <h1><%=title %></h1>
 
-<%- include('partials/projects') -%>
+<table>
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Status</th>
+      <th>Focus</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+      <th>Update</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.projects.forEach(item => {%>
+      <tr>
+        <td>
+          <form action="/read-project" method="GET">
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="submit" value="<%=item.name %>" name="submitData"/>
+            </div>
+          </form>
+        </td>
+        <td><%=item.project_status%></td>
+        <td >
+          <form action="/update-project-focus" method="POST" id="project-focus-form<%=item.project_id %>">
+            <div class="input-field" style="text-align: center;">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <% if (item.focus_flag > 0) {%>
+                <input type="checkbox" name="project-focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>" checked>
+              <%} else { %>
+                <input type="checkbox" name="project-focus-check" onclick="onlyOne(this)" value="<%=item.project_id %>">
+              <%} %>
+            </div>
+          </form>
+        </td>
+        <td><%=item.start_date%></td>
+        <td><%=item.due_date%></td>
+        <td>  
+          <form action="/update-project" method="GET">
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="submit" value="Update Project" name="submitData"/>
+            </div>
+          </form>
+        </td>
+        <td>  
+          <form action="/delete-project" method="POST">
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="submit" value="Delete Project" name="submitData"/>
+            </div>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
 
+<div id="new-line">
+  <h1 id="heading">Sprints:</h1>
+  <%- include('partials/sprints') -%>
+</div>
+
+
+<div id="new-line">
+  <h1 id="heading">Tasks:</h1>
+  <%- include('partials/tasks') -%>
+</div>
+
+<div id="new-line">
+  <pre>
+    <%= JSON.stringify(data, null, 2) %>
+  </pre>
+</div>
 
 <%- include('partials/footer') -%>

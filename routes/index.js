@@ -307,7 +307,11 @@ router.get('/read-sprint', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data.sprints, false); 
+    if (data.sprints)
+      formatDates(data.sprints, false); 
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    if (data.tasks)
+      formatDates(data.tasks, false);
   } catch (e) { console.log(e); }
   res.render('readSprint', { 
     title: "Read Sprint Privilege Scoped Page", 
@@ -505,7 +509,14 @@ router.get('/read-project', requiresAuth(), async (req, res) => {
     });
     data = apiResponse.data;
     //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
-    formatDates(data, false);
+    if(data.projects)
+      formatDates(data.projects, false);
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    if(data.sprints)
+      formatDates(data.sprints, false);
+    //format date fields to be in MM/DD/YYYY format instead of the default YYYY/MM/DD format of the DATE type
+    if(data.tasks)
+      formatDates(data.tasks, false);
   } catch (e) { console.log(e); }
   //render the content after a successful api response
   res.render('readProject', { 

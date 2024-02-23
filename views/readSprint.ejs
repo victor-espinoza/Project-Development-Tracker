@@ -7,94 +7,102 @@
 <ul class="no-bullets">
   <!-- Populate table  -->
   <% data.sprints.forEach(item => {%>
-      <li>
-        <% for (const project of data.projects) {%>
-          <% if (project.project_id === item.project_id) { %>
-            <div class="input-field">
-              <div name="projectId">
-                <label for="projectId" class="label-background">Project:</label>
-                <%=project.name%>
-              </div>
+    <li>
+      <% for (const project of data.projects) {%>
+        <% if (project.project_id === item.project_id) { %>
+          <div class="input-field">
+            <div name="projectId">
+              <label for="projectId" class="label-background">Project:</label>
+              <%=project.name%>
             </div>
-            <% break; %>
-          <% } %>
+          </div>
+          <% break; %>
         <% } %>
+      <% } %>
 
-        <div class="input-field">
-          <label for="sprintName" class="label-background">Sprint Name:</label>
-          <%=item.name%>
-        </div>
-        
-
-        <div class="input-field">
-          <div name="status">
-            <label for="status" class="label-background">Status:</label>
-            <%=item.sprint_status%>
-          </div>
-        </div>
-
-        <div class="input-field"> 
-          <form action="/update-sprint-focus" method="POST" id="sprint-focus-form<%=item.sprint_id %>">
-            <label for="sprint-focus-check" class="label-background">Focus:</label>
-            <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
-            <% if (item.focus_flag > 0) {%>
-              <input type="checkbox" name="sprint-focus-check" onclick="onlyOne(this)" value="<%=item.sprint_id %>" checked>
-            <%} else { %>
-              <input type="checkbox" name="sprint-focus-check" onclick="onlyOne(this)" value="<%=item.sprint_id %>">
-            <%} %>
-          </form>
-        </div>
-
-        <div class="input-field">
-          <div name="startDate">
-            <label for="startDate" class="label-background">Start Date:</label>
-            <%=item.start_date%>
-          </div>
-        </div>
-
-        <div class="input-field">
-          <div name="dueDate">
-            <label for="dueDate" class="label-background">Due Date:</label>
-            <%=item.due_date%>
-          </div>
-        </div>
-      </li>
-
-      <li id="after-text-box">
-        <div class="input-field">
-          <label for="newSprintReview" class="label-background">Sprint Review:</label>
-          <textarea name="newSprintReview" cols="50" rows="10" readonly><%= item.sprint_review %></textarea>
-        </div>
-        
-        <div id="input-field">
-          <label for="newSprintRetrospective" class="label-background">Sprint Retrospective:</label>
-          <textarea name="newSprintRetrospective" cols="50" rows="10" readonly><%= item.sprint_retrospective %></textarea>
-        </div>
-      </li>
-
-      <li>    
-        <div id="new-line">
-          <label for="updateData" class="label-background">Update:</label>
-          <form action="/update-sprint" method="GET">
-            <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
-            <input type="submit" value="Update Sprint" name="updateData"/>
-          </form>
-        </div>
+      <div class="input-field">
+        <label for="sprintName" class="label-background">Sprint Name:</label>
+        <%=item.name%>
+      </div>
       
-        <div id="new-line">
-          <label for="deleteData" class="label-background">Delete:</label>
-          <form action="/delete-sprint" method="POST">
-            <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
-            <input type="submit" value="Delete Sprint" name="deleteData"/>
-          </form>
-        </div>
-      </li>
-      
-    <% }); %>
-  </ul> 
 
-<pre>
-  <%= JSON.stringify(data, null, 2) %>
-</pre>
+      <div class="input-field">
+        <div name="status">
+          <label for="status" class="label-background">Status:</label>
+          <%=item.sprint_status%>
+        </div>
+      </div>
+
+      <div class="input-field-center"> 
+        <form action="/update-sprint-focus" method="POST" id="sprint-focus-form<%=item.sprint_id %>">
+          <label for="sprint-focus-check" class="label-background">Focus:</label>
+          <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+          <% if (item.focus_flag > 0) {%>
+            &#x2714
+          <%} else { %>
+            &#x2718
+          <%} %>
+        </form>
+      </div>
+
+      <div class="input-field">
+        <div name="startDate">
+          <label for="startDate" class="label-background">Start Date:</label>
+          <%=item.start_date%>
+        </div>
+      </div>
+
+      <div class="input-field">
+        <div name="dueDate">
+          <label for="dueDate" class="label-background">Due Date:</label>
+          <%=item.due_date%>
+        </div>
+      </div>
+    </li>
+
+    <li id="after-text-box">
+      <div class="input-field">
+        <label for="newSprintReview" class="label-background">Sprint Review:</label>
+        <textarea name="newSprintReview" cols="50" rows="10" readonly><%= item.sprint_review %></textarea>
+      </div>
+      
+      <div id="input-field">
+        <label for="newSprintRetrospective" class="label-background">Sprint Retrospective:</label>
+        <textarea name="newSprintRetrospective" cols="50" rows="10" readonly><%= item.sprint_retrospective %></textarea>
+      </div>
+    </li>
+
+    <li>    
+      <div id="new-line">
+        <label for="updateData" class="label-background">Update:</label>
+        <form action="/update-sprint" method="GET">
+          <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+          <input type="submit" value="Update Sprint" name="updateData"/>
+        </form>
+      </div>
+    
+      <div id="new-line">
+        <label for="deleteData" class="label-background">Delete:</label>
+        <form action="/delete-sprint" method="POST">
+          <input type="hidden" value="<%=item.sprint_id %>" name="sprint_id"/>
+          <input type="submit" value="Delete Sprint" name="deleteData"/>
+        </form>
+      </div>
+    </li>
+    
+  <% }); %>
+</ul> 
+
+
+<div id="new-line">
+  <h1 id="heading">Tasks:</h1>
+  <%- include('partials/tasks') -%>
+</div>
+
+<div id="new-line">
+  <pre>
+    <%= JSON.stringify(data, null, 2) %>
+  </pre>
+</div>
 
 <%- include('partials/footer') -%>
