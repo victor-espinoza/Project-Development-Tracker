@@ -1,18 +1,131 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<pre><%= JSON.stringify(user, null, 2) %></pre>
 <% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" />
-    <p class="name">
-      <%=user.name%>
-    </p>
-  </div>
+  <form action="/create-task" method="POST">
+    <div class="input-field">
+      <label for="project_id">Project:</label>
+      <select name="project_id" id="project-drop-down" onChange="changesprints(this.value);">   
+        <% data.projects.forEach(item => {%>
+          <% if (item.focus_flag) { %>
+            <option value="<%=item.project_id %>" selected><%=item.name %></option>
+          <% } else { %>
+            <option value="<%=item.project_id %>"><%=item.name %></option>
+          <% } %>
+        <% }); %>
+      </select>
+    </div>
+    <div class="input-field">
+      <label for="sprint_id">Sprint:</label>
+      <input type="text" list="sprints" name="sprintName" id="sprintInput" placeholder="Select/Enter New Name" autocomplete="off"/>
+      <input type=hidden name="sprint_id" id="sprintInput-hidden" value="-1"/>
+      <datalist name="sprint_name" id="sprints">
+        <% for (pairInfo of projSprPairs) { %>
+          <% if (pairInfo.project.is_focused) { %>
+            <% for (sprint of pairInfo.sprints) { %>
+              <option value="<%=sprint.sprint_id %>"><%=sprint.sprint_name %></option>
+            <% } %>
+            <% break; %>
+          <% } %>
+        <% } %>
+      </datalist>
+    </div>   
+    <% for (sprint of data.sprints) { %>
+      <% if (sprint.focus_flag) { %>
+          <input type=hidden name="default_sprint_id" value="<%=sprint.sprint_id %>"/>
+          <% break; %>
+      <% } %>
+    <% } %>
+    <div class="input-field">
+      <label for="newName">Task Name:</label>
+      <input type="text" name="newName" placeholder="(Default: New Task)"/>
+    </div>
+    <div class="input-field">
+      <label for="newStatus">Status:</label>
+      <input type="text" name="newStatus" placeholder="(Default: In Progress)"/>
+    </div>
+    <div class="input-field">
+      <label for="newOwner">Owner:</label>
+      <input type="text" name="newOwner" placeholder="(Default: Victor)"/>
+    </div>
+    <div class="input-field">
+      <label for="newStartDate">Start Date:</label>
+      <input type="date" name="newStartDate" value="<%= default_dates.start_date %>" class="date-input"/>
+    </div>
+    <div class="input-field">
+      <label for="newDueDate">Due Date:</label>
+      <input type="date" name="newDueDate" value="<%= default_dates.due_date %>" class="date-input" />
+    </div>
+    <div class="input-field">
+      <br/>
+      <input type="submit" value="Create Task" name="submitData"/>
+    </div>
+  </form>
 <% } %>
+<br /><br /><br />
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>
+
+<p>Newly Created Pairs:</p>
+<pre>
+  <%= JSON.stringify(projSprPairs, null, 2) %>
+</pre>
+
+
+<%-'<script>'%>
+  let projSprPairs = <%-JSON.stringify(projSprPairs)%>;
+<%-'</script>'%>
+
+
+
+<script>
+  document.querySelector('#sprintInput').addEventListener('input', function(e) {
+    let input = e.target,   
+        list = input.list,
+        options = list.querySelectorAll(' option'),
+        selectedOption = list.querySelectorAll(' option[value="'+input.value+'"]'),
+        hiddenInput = document.getElementById(input.getAttribute('id') + '-hidden'),
+        inputValue = input.value;
+
+    hiddenInput.value = -1; //default value for custom sprint names
+
+    //update hidden value and update the input textbox's displayed text if there is a datalist option match
+    if (selectedOption.length > 0) {
+      hiddenInput.value = input.value;
+      input.value = selectedOption[0].innerText;
+    }
+
+    //update the hidden value if the typed input matches the text of any options in the datalist
+    for (const option of options) {
+      if (option.innerText === inputValue) {
+        hiddenInput.value = option.value;
+        break;
+      }
+    }
+  });
+
+
+  function changesprints(selectedId) {
+    if (selectedId.length == 0) 
+      document.getElementById("sprintInput").innerHTML = "<option></option>";
+    else {
+      let sprintOptions = "";
+      
+      for (pairInfo of projSprPairs) {
+        if (JSON.stringify(pairInfo.project.project_id) === selectedId) {
+          for (sprint of pairInfo.sprints) {
+            sprintOptions += `<option value="${sprint.sprint_id}">${sprint.sprint_name}</option>`;
+          }
+          break;
+        }
+      }
+      document.getElementById("sprints").innerHTML = sprintOptions;
+    }
+  }
+
+</script>
+
+
 
 <%- include('partials/footer') -%>

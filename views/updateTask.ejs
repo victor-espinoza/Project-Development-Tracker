@@ -1,17 +1,171 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" />
-    <p class="name">
-      <%= user.nickname.charAt(0).toUpperCase() + user.nickname.slice(1) %>
-    </p>
-  </div>
-<% } %>
+<table>
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Sprint</th>
+      <th>Task Name</th>
+      <th>Owner</th>
+      <th>Status</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+      <th>Update</th>
+    </tr> 
+  </thead>
+
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.tasks.forEach(item => {%>
+      <tr>
+        <form action="/update-task" method="POST">
+          <td>
+            <div class="input-field">
+              <select name="project_id" id="project-drop-down" onChange="changesprints(this.value);">
+                <% data.projects.forEach(project => {%>
+                  <% if (project.project_id == item.project_id) { %>
+                    <option value="<%=project.project_id %>" selected><%=project.name %></option>
+                  <% } else { %>
+                    <option value="<%=project.project_id %>"><%=project.name %></option>
+                  <% } %>
+                <% }); %> 
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <% let sprintExists = false;%>
+              <% if (item.sprint_id) { %>
+                <% for (const sprint of data.sprints) {%>
+                  <% if (sprint.sprint_id === item.sprint_id) { %>
+                    <input type="text" list="sprints" name="sprintName" id="sprintInput" value="<%=sprint.name %>" autocomplete="off"/>
+                    <input type=hidden name="sprint_id" id="sprintInput-hidden" value="<%=sprint.sprint_id %>"/>
+                    <% sprintExists = true;%>
+                    <% break; %>
+                  <% } %>
+                <% } %>
+              <% } %>
+              <% if (!sprintExists) {%>
+                <input type="text" list="sprints" name="sprintName" id="sprintInput" autocomplete="off"/>
+                <input type=hidden name="sprint_id" id="sprintInput-hidden" value="-1"/>
+              <% } %>
+              <datalist name="sprint_name" id="sprints">
+                <% for (pairInfo of projSprPairs) { %>
+                  <% if (pairInfo.project.project_id === item.project_id) { %>
+                    <% for (sprint of pairInfo.sprints) { %>
+                      <option value="<%=sprint.sprint_id %>"><%=sprint.sprint_name %></option>
+                    <% } %>
+                    <% break; %>
+                  <% } %>
+                <% } %>
+              </datalist>
+            </div>   
+          </td>
+          <% for (sprint of data.sprints) { %>
+            <% if (sprint.focus_flag) { %>
+                <input type=hidden name="default_sprint_id" value="<%=sprint.sprint_id %>"/>
+                <% break; %>
+            <% } %>
+          <% } %>
+          <td>
+            <div class="input-field">
+              <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
+              <input type="text" name="newName" value="<%=item.name %>" id="newName"/>
+            </div>
+          </td>
+          <td>
+            <div class="input-field"> 
+              <input type="text" name="newOwner" placeholder="<%=item.task_owner %>" id="newName"/>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="text" name="newStatus" placeholder="<%=item.task_status%>"/>
+            </div>
+          </td> 
+          <td>
+            <div class="input-field">
+              <input type="date" name="newStartDate" value="<%=item.start_date %>"  class="date-input"/>
+            </div>  
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="date" name="newDueDate" value="<%=item.due_date%>" class="date-input" />
+            </div>
+          </td>
+          <td>
+            <div class="input-field"> 
+              <input type="submit" value="Submit Changes" name="submitData"/>
+            </div>
+          </td>
+        </form> 
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>
+
+<p>Newly Created Pairs:</p>
+<pre>
+  <%= JSON.stringify(projSprPairs, null, 2) %>
+</pre>
+
+
+<%-'<script>'%>
+  let projSprPairs = <%-JSON.stringify(projSprPairs)%>;
+<%-'</script>'%>
+
+
+
+<script>
+  document.querySelector('#sprintInput').addEventListener('input', function(e) {
+    let input = e.target,   
+        list = input.list,
+        options = list.querySelectorAll(' option'),
+        selectedOption = list.querySelectorAll(' option[value="'+input.value+'"]'),
+        hiddenInput = document.getElementById(input.getAttribute('id') + '-hidden'),
+        inputValue = input.value;
+
+    hiddenInput.value = -1; //default value for custom sprint names
+
+    //update hidden value and update the input textbox's displayed text if there is a datalist option match
+    if (selectedOption.length > 0) {
+      hiddenInput.value = input.value;
+      input.value = selectedOption[0].innerText;
+    }
+
+    //update the hidden value if the typed input matches the text of any options in the datalist
+    for (const option of options) {
+      if (option.innerText === inputValue) {
+        hiddenInput.value = option.value;
+        break;
+      }
+    }
+  });
+
+
+  function changesprints(selectedId) {
+    if (selectedId.length == 0) 
+      document.getElementById("sprintInput").innerHTML = "<option></option>";
+    else {
+      let sprintOptions = "";
+      
+      for (pairInfo of projSprPairs) {
+        if (JSON.stringify(pairInfo.project.project_id) === selectedId) {
+          for (sprint of pairInfo.sprints) {
+            sprintOptions += `<option value="${sprint.sprint_id}">${sprint.sprint_name}</option>`;
+          }
+          break;
+        }
+      }
+      document.getElementById("sprints").innerHTML = sprintOptions;
+    }
+  }
+
+</script>
 
 <%- include('partials/footer') -%>

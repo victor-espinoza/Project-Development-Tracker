@@ -1,0 +1,69 @@
+<% if (!(JSON.stringify(data) === '{}')) { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Sprint</th>
+        <th>Task Name</th>
+        <th>Status</th>
+        <th>Owner</th>
+        <th>Start Date</th>
+        <th>Due Date</th>
+        <th>Update</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="data-output">
+      <!-- Populate table  -->
+      <% data.tasks.forEach(item => {%>
+        <tr>
+          <td>
+            <% for (const project of data.projects) {%>
+              <% if (project.project_id === item.project_id) { %>
+                <%=project.name%>
+                <% break; %>
+              <% } %>
+            <% } %>
+          </td>
+          <td>
+            <% for (const sprint of data.sprints) {%>
+              <% if (sprint.sprint_id === item.sprint_id) { %>
+                <%=sprint.name%>
+                <% break; %>
+              <% } %>
+            <% } %>
+          </td>
+          <td>
+            <form action="/read-task" method="GET">
+              <div class="input-field">
+                <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
+                <input type="submit" value="<%=item.name %>" name="submitData"/>
+              </div>
+            </form>
+          </td>
+          <td><%=item.task_status%></td>
+          <td><%=item.task_owner%></td>
+          <td><%=item.start_date%></td>
+          <td><%=item.due_date%></td>
+          <td>  
+            <form action="/update-task" method="GET">
+              <div class="input-field">
+                <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
+                <input type="submit" value="Update Task" name="submitData"/>
+              </div>
+            </form>
+          </td>
+          <td>  
+            <form action="/delete-task" method="POST">
+              <div class="input-field">
+                <input type="hidden" value="<%=item.task_id %>" name="task_id"/>
+                <input type="submit" value="Delete Task" name="submitData"/>
+              </div>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<%} %>
+

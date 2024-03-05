@@ -1,18 +1,68 @@
 <%- include('partials/header') -%>
 
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<pre><%= JSON.stringify(user, null, 2) %></pre>
-<% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" />
-    <p class="name">
-      <%=user.name%>
-    </p>
-  </div>
-<% } %>
+<table>
+  <thead>
+    <tr>
+      <th>Project Name</th>
+      <th>Status</th>
+      <th>Focus</th>
+      <th>Start Date</th>
+      <th>Due Date</th>
+      <th>Update</th>
+    </tr>
+  </thead>
+
+  <tbody id="data-output">
+    <!-- Populate table  -->
+    <% data.forEach(item => {%>
+      <tr>
+        <form action="/update-project" method="POST">
+          <td>
+            <div class="input-field">
+              <input type="hidden" value="<%=item.project_id %>" name="project_id"/>
+              <input type="text" name="newName" placeholder="<%=item.name %>" id="newName"/>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="text" name="newStatus" placeholder="<%=item.status_flag%>"/>
+            </div>
+          </td> 
+          <td>
+            <div class="input-field"> 
+              <% if (item.focus_flag > 0) {%>
+                <input type="checkbox" name="focus" value=1 checked>
+              <%} else { %>
+                <input type="checkbox" name="focus" value=1 > 
+              <%} %>
+            </div>
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="date" name="newStartDate" value="<%=item.start_date %>"  class="date-input"/>
+            </div>  
+          </td>
+          <td>
+            <div class="input-field">
+              <input type="date" name="newDueDate" value="<%=item.due_date%>" class="date-input" />
+            </div>
+          </td>
+          <td>
+            <div class="input-field"> 
+              <input type="submit" value="Sumbit Changes" name="submitData"/>
+            </div>
+          </td>
+        </form> 
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+
 <pre>
   <%= JSON.stringify(data, null, 2) %>
 </pre>
+
 
 <%- include('partials/footer') -%>

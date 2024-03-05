@@ -1,18 +1,32 @@
 <%- include('partials/header') -%>
-
 <h1><%=title %></h1>
-<p>Welcome to <%= title %></p>
-<pre><%= JSON.stringify(user, null, 2) %></pre>
 <% if(user) { %>
-  <div class="profileInfo">
-    <img src="<%= user.picture %>" /> 
-    <p class="name">
-      <%=user.name%>
-    </p>
-  </div>
+  <form action="/create-project" method="POST">
+    <div class="input-field">
+      <label for="newName">Project Name:</label>
+      <input type="text" name="newName" placeholder="(Default: New Project)"/>
+    </div>
+    <div class="input-field">
+      <label for="newStatus">Status:</label>
+      <input type="text" name="newStatus" placeholder="(Default: In Progress)"/>
+    </div>
+    <div class="input-field"> 
+      <label for="newFocus">Focus:</label>
+      <input type="checkbox" name="focus" value=1 >
+    </div>
+    <div class="input-field">
+      <label for="newStartDate">Start Date:</label>
+      <input type="date" name="newStartDate" value="<%= data.current_date %>"  class="date-input"/>
+    </div>
+    <div class="input-field">
+      <label for="newDueDate">Due Date:</label>
+      <input type="date" name="newDueDate" value="<%= data.due_date %>" class="date-input" />
+    </div>
+    <div class="input-field">
+      <br/>
+      <input type="submit" value="Create Project" name="submitData"/>
+    </div>
+  </form> 
 <% } %>
-<pre>
-  <%= JSON.stringify(data, null, 2) %>
-</pre>
 
 <%- include('partials/footer') -%>

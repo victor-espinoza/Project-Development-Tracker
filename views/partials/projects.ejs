@@ -1,7 +1,3 @@
-<%- include('partials/header') -%>
-
-<h1><%=title %></h1>
-
 <table>
   <thead>
     <tr>
@@ -16,7 +12,7 @@
   </thead>
   <tbody id="data-output">
     <!-- Populate table  -->
-    <% data.projects.forEach(item => {%>
+    <% data.forEach(item => {%>
       <tr>
         <td>
           <form action="/read-project" method="GET">
@@ -62,21 +58,24 @@
   </tbody>
 </table>
 
-<div id="new-line">
-  <h1 id="heading">Sprints:</h1>
-  <%- include('partials/sprints') -%>
-</div>
 
-
-<div id="new-line">
-  <h1 id="heading">Tasks:</h1>
-  <%- include('partials/tasks') -%>
-</div>
-
-<div id="new-line">
-  <pre>
-    <%= JSON.stringify(data, null, 2) %>
-  </pre>
-</div>
-
-<%- include('partials/footer') -%>
+<script>
+  function onlyOne(checkbox) {
+    let focusCount = 0;
+    let checkboxes = document.getElementsByName('project-focus-check');
+    checkboxes.forEach((item) => {
+        if (item.checked) 
+          focusCount++;
+    });
+    if (focusCount > 0) {
+      checkboxes.forEach((item) => {
+          // console.log(item.checked);
+          if (item !== checkbox) item.checked = false;
+      });
+      document.getElementById(`project-focus-form${checkbox.value}`).submit();
+      // checkbox.parentElement.submit();
+    } else {
+      checkbox.checked = true;
+    }
+  }
+</script>

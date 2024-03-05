@@ -5,8 +5,8 @@
     <title><%=title || "Project Development Tracker" %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
-  <body>
-    <nav>
+  <body onload="document.getElementById('project_form').submit()">
+    <nav> 
       <ul>
         <li><a href="/"><button>Home</button></a></li>
         <% if(!isAuthenticated) { %>
@@ -31,3 +31,13 @@
         <% } %>
       </ul>
     </nav>
+    <h1><%=title %></h1>
+
+    <form action="/fix-project-focus" id="project_form" method="POST">
+      <input type="hidden" value="<%=data.project_id %>" name="project_id"/>
+      <input type="hidden" value="<%=data.focus_status %>" name="isFocused"/>
+      <input type="hidden" value="<%=data.total_checks %>" name="checkmarksCount"/>
+    </form>
+
+  </body>
+</html>

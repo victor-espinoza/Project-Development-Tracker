@@ -1,5 +1,5 @@
-var express = require('express');
-var indexRouter = require('./routes/index.js');
+const express = require('express');
+const indexRouter = require('./routes/index.js');
 const { auth } = require('express-openid-connect');
 require('dotenv').config();
 
@@ -20,8 +20,9 @@ const config = {
   }
 };
 
-var app = express(); //define express app
-app.set('views', 'views'); //views engine will use the views directory
+const app = express(); //define express app
+
+app.set('views', 'views');
 app.set('view engine', 'ejs'); //define views engine being used (ejs)
 //add middleware so incoming requests can be handled 
 app.use(express.json()); //handle incoming json
@@ -29,6 +30,7 @@ app.use(express.json()); //handle incoming json
 app.use(express.urlencoded({ extended: true })); //handle incoming url encoded query strings
 //anything in the public directory will be served before routes are resolved
 app.use(express.static('public'));
+
 
 //authentication middleware (auth router attaches /login, /logout, and /callback routes to the baseURL)
 app.use(auth(config));
